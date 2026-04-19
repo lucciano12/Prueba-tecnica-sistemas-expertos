@@ -11,9 +11,14 @@ class Bodega
   }
 
   //Obetener todas las bodegas
-  public function getAll()
+  public function getAll($filtro = 'todos') //Con el parametro filtro podemos obtener todas las bodegas o solo las activas o desactivadas
   {
-    $stmt = $this->pdo->query("SELECT * from bodegas"); //Se ejecuta una consulta SQL para obtener todas las filas de la tabla bodegas
+    if ($filtro === 'todos') {
+      $stmt = $this->pdo->query("SELECT * FROM bodegas ORDER BY id ASC"); // Se obtienen todas las bodegas ordenadas por id ascendente para garantizar un orden consistente en el listado
+    }else{
+      $stmt = $this->pdo->prepare("SELECT * FROM bodegas WHERE estado = :estado ORDER BY id ASC");  // Se prepara la consulta con filtro por estado para evitar inyeccion SQL
+      $stmt->execute([':estado' => $filtro]); //Se ejecuta la consulta, pasando el valor del filtro como un parametro
+    }
     return $stmt->fetchAll(); //Se devuelve el resultado de la consulta como un array asociativo
   }
 
@@ -21,7 +26,7 @@ class Bodega
   public function getById($id)
   {
     $stmt = $this->pdo->prepare("SELECT * FROM bodegas WHERE id = :id"); //Se prepara una consulta SQL para obtener una bodega por su id, utilizando un marcador de posición :id
-    $stmt->execute(['id' => $id]); //Se ejecuta la consulta, pasando el valor del id como un parámetro
+    $stmt->execute([':id' => $id]); //Se ejecuta la consulta, pasando el valor del id como un parámetro
     return $stmt->fetch(); //Se devuelve el resultado de la consulta como un array asociativo
   }
 
