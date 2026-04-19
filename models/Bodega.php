@@ -26,37 +26,42 @@ class Bodega
   }
 
   //Crear una nueva bodega
-  public function create($nombre, $ubicacion, $capacidad, $estado){
-    $stmt = $this->pdo-> prepare(
-      "INSERT INTO bodegas (nombre, ubicacion, capacidad, estado) VALUES (:nombre, :ubicacion, :capacidad, :estado)
+  public function create($codigo, $nombre, $ubicacion, $dotacion, $estado)
+  {
+    $stmt = $this->pdo->prepare(
+      "INSERT INTO bodegas (codigo, nombre, ubicacion,  dotacion, estado) VALUES (:codigo, :nombre, :ubicacion, :dotacion, :estado)
       "
     ); //Se prepara una consulta para insertar una nueva bodega en la tabla bodegas y utilizamos placeholders para los valores que se van a insertar
     return $stmt->execute([
-      'nombre' => $nombre,
-      'ubicacion' => $ubicacion,
-      'capacidad' => $capacidad,
-      'estado' => $estado
+      ':codigo' => $codigo,
+      ':nombre' => $nombre,
+      ':ubicacion' => $ubicacion,
+      ':dotacion' => $dotacion,
+      ':estado' => $estado
     ]);
   }
 
   //Actualizar una bodega existente
-  public function update($id, $nombre, $ubicacion, $capacidad, $estado){
+  public function update($id, $codigo, $nombre, $ubicacion, $dotacion, $estado)
+  {
     $stmt = $this->pdo->prepare(
-      "UPDATE bodegas SET nombre = :nombre, ubicacion = :ubicacion, capacidad = :capacidad, estado = :estado WHERE id = :id"
+      "UPDATE bodegas 
+         SET codigo = :codigo, nombre = :nombre, ubicacion = :ubicacion, dotacion = :dotacion, estado = :estado, updated_at = CURRENT_TIMESTAMP WHERE id = :id"
     ); //Se prepara una consulta para actualizar una bodega existente en la tabla bodegas, utilizando placeholders para los valores que se van a actualizar y el id de la bodega que se va a actualizar
     return $stmt->execute([
-      'id' => $id,
-      'nombre' => $nombre,
-      'ubicacion' => $ubicacion,
-      'capacidad' => $capacidad,
-      'estado' => $estado
+      ':id' => $id,
+      ':codigo' => $codigo,
+      ':nombre' => $nombre,
+      ':ubicacion' => $ubicacion,
+      ':dotacion' => $dotacion,
+      ':estado' => $estado
     ]);
   }
 
   //Eliminar una bodega por su id
-  public function delete($id){
-    $stmt = $this->pdo->prepare("DELETE FROM bodegas WHERE id = :id");// Se prepara una consulta para eliminar una bodega por su id
-    return $stmt->execute(['id' => $id]);
+  public function delete($id)
+  {
+    $stmt = $this->pdo->prepare("DELETE FROM bodegas WHERE id = :id"); // Se prepara una consulta para eliminar una bodega por su id
+    return $stmt->execute([':id' => $id]);
   }
-
 }
