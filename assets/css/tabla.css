@@ -1,0 +1,65 @@
+/* ===========================================
+   TABLA.CSS — Estilos del listado de bodegas
+   =========================================== */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+th {
+    background: #4a90d9;
+    color: #fff;
+    padding: 10px;
+    text-align: left;
+}
+
+td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    vertical-align: middle;
+}
+
+tr:hover { background: #f0f7ff; }
+
+/* Badges de estado */
+.badge-activa {
+    background: #27ae60;
+    color: #fff;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.badge-desactiva {
+    background: #e74c3c;
+    color: #fff;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+/* Celda de acciones — botones con separacion */
+.acciones {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+/* Filtros */
+.filtros {
+    margin: 15px 0;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.filtros select {
+    padding: 6px 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}

@@ -1,0 +1,83 @@
+/* ===========================================
+   BASE.CSS — Reset + Variables globales
+   =========================================== */
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f5f5f5;
+    color: #333;
+}
+
+/* Contenedor principal */
+.container {
+    max-width: 1100px;
+    margin: 20px auto;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+/* Contenedor angosto (formularios) */
+.container-narrow {
+    max-width: 680px;
+    margin: 40px auto;
+    background: #fff;
+    padding: 32px;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+h1 {
+    color: #333;
+    margin-bottom: 8px;
+}
+
+/* Botones base */
+.btn {
+    padding: 6px 12px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    display: inline-block;
+    transition: opacity 0.15s ease;
+}
+.btn:hover { opacity: 0.88; }
+
+.btn-primary   { background: #4a90d9; color: #fff; }
+.btn-secondary { background: #f0f0f0; color: #555; }
+.btn-warning   { background: #f0a500; color: #fff; }
+.btn-danger    { background: #e74c3c; color: #fff; }
+
+/* Breadcrumb */
+.breadcrumb {
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 24px;
+}
+.breadcrumb a {
+    color: #4a90d9;
+    text-decoration: none;
+}
+.breadcrumb a:hover { text-decoration: underline; }
+
+/* Alerta de error (servidor) */
+.alert-error {
+    background: #fdecea;
+    border: 1px solid #f5c6c2;
+    color: #a94442;
+    padding: 12px 16px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    line-height: 1.6;
+}
