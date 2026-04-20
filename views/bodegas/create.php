@@ -15,6 +15,8 @@
         .breadcrumb a { color: #4a90d9; text-decoration: none; }
         .breadcrumb a:hover { text-decoration: underline; }
 
+        .alert-error { background: #fdecea; border: 1px solid #f5c6c2; color: #a94442; padding: 12px 16px; border-radius: 6px; margin-bottom: 20px; font-size: 14px; line-height: 1.6; }
+
         .form-group { margin-bottom: 20px; }
         label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; color: #444; }
         label span.required { color: #e74c3c; margin-left: 3px; }
@@ -54,25 +56,28 @@
 <body>
 <div class="container">
 
-    <!-- Breadcrumb de navegación -->
     <p class="breadcrumb">
         <a href="index.php?action=index">Bodegas</a> &rsaquo; Nueva Bodega
     </p>
 
     <h1>Crear Nueva Bodega</h1>
 
-    <!-- El formulario envía por POST al método store() -->
+    <?php if (!empty($error)): ?>
+        <div class="alert-error">
+            ⚠️ <?= $error ?>
+        </div>
+    <?php endif; ?>
+
     <form action="index.php?action=store" method="POST" id="formCrear" novalidate>
 
-        <!-- Fila 1: Código y Nombre -->
         <div class="form-row">
             <div class="form-group">
-                <label for="codigo">Código <span class="required">*</span></label>
+                <label for="codigo">Codigo <span class="required">*</span></label>
                 <input type="text" id="codigo" name="codigo"
-                       placeholder="Ej: BOD-001"
-                       maxlength="20"
+                       placeholder="Ej: BOD01"
+                       maxlength="5"
                        value="<?= htmlspecialchars($_POST['codigo'] ?? '') ?>">
-                <span class="error-msg" id="err-codigo">El código es obligatorio</span>
+                <span class="error-msg" id="err-codigo">El codigo es obligatorio</span>
             </div>
 
             <div class="form-group">
@@ -85,27 +90,24 @@
             </div>
         </div>
 
-        <!-- Fila 2: Dirección (campo completo) -->
         <div class="form-group">
-            <label for="ubicacion">Dirección / Ubicación <span class="required">*</span></label>
+            <label for="ubicacion">Direccion / Ubicacion <span class="required">*</span></label>
             <input type="text" id="ubicacion" name="ubicacion"
-                   placeholder="Ej: Av. Principal 123, Santiago"
+                   placeholder="Ej: Av. Principal 123, Vina del Mar"
                    maxlength="200"
                    value="<?= htmlspecialchars($_POST['ubicacion'] ?? '') ?>">
-            <span class="error-msg" id="err-ubicacion">La ubicación es obligatoria</span>
+            <span class="error-msg" id="err-ubicacion">La ubicacion es obligatoria</span>
         </div>
 
-        <!-- Fila 3: Dotación (obligatoria, encargado eliminado) -->
         <div class="form-group">
-            <label for="dotacion">Dotación (N° personas) <span class="required">*</span></label>
+            <label for="dotacion">Dotacion (N° personas) <span class="required">*</span></label>
             <input type="number" id="dotacion" name="dotacion"
                    placeholder="Ej: 10"
                    min="0" max="9999"
                    value="<?= htmlspecialchars($_POST['dotacion'] ?? '') ?>">
-            <span class="error-msg" id="err-dotacion">La dotación es obligatoria</span>
+            <span class="error-msg" id="err-dotacion">La dotacion es obligatoria</span>
         </div>
 
-        <!-- Fila 4: Estado -->
         <div class="form-group">
             <label for="estado">Estado <span class="required">*</span></label>
             <select id="estado" name="estado">
@@ -116,7 +118,6 @@
             <span class="error-msg" id="err-estado">Debes seleccionar un estado</span>
         </div>
 
-        <!-- Botones de acción -->
         <div class="form-actions">
             <a href="index.php?action=index" class="btn btn-secondary">Cancelar</a>
             <button type="submit" class="btn btn-primary">Guardar Bodega</button>
@@ -126,11 +127,9 @@
 </div>
 
 <script>
-// Validación básica en el cliente antes de enviar el formulario
 document.getElementById('formCrear').addEventListener('submit', function(e) {
     let valido = true;
 
-    // Campos obligatorios y sus mensajes de error
     const campos = [
         { id: 'codigo',    err: 'err-codigo' },
         { id: 'nombre',    err: 'err-nombre' },
@@ -153,14 +152,12 @@ document.getElementById('formCrear').addEventListener('submit', function(e) {
         }
     });
 
-    // Si hay errores, detener el envío y enfocar el primer campo inválido
     if (!valido) {
         e.preventDefault();
         document.querySelector('.error').focus();
     }
 });
 
-// Limpiar error visual cuando el usuario comienza a escribir
 document.querySelectorAll('input, select').forEach(function(el) {
     el.addEventListener('input', function() {
         this.classList.remove('error');
