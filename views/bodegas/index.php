@@ -65,7 +65,7 @@
                     <td><?= htmlspecialchars($bodega['nombre']) ?></td>
                     <td><?= htmlspecialchars($bodega['ubicacion']) ?></td>
                     <td><?= htmlspecialchars($bodega['dotacion']) ?></td>
-                    <td><?= htmlspecialchars($bodega['encargado'] ?? 'Sin encargado') ?></td>
+                    <td><?= htmlspecialchars($bodega['encargado_nombre'] ?? 'Sin encargado') ?></td>
                     <td><?= date('d/m/Y H:i', strtotime($bodega['created_at'])) ?></td>
                     <td>
                         <?php if ($bodega['estado'] === 'Activada'): ?>
