@@ -5,13 +5,15 @@ Permite registrar, listar, editar y eliminar bodegas, con filtro por estado y re
 
 ---
 
-## Requisitos del entorno
+## Entorno de desarrollo utilizado
 
-| Componente   | Versión        |
-|--------------|----------------|
-| Apache       | 2.4+           |
-| PHP          | 7.x            |
-| PostgreSQL   | 12+            |
+| Herramienta     | Versión          |
+|-----------------|------------------|
+| Laragon         | 2026 v8.6.1      |
+| Apache          | 2.4.66           |
+| PHP             | 7.4.33           |
+| PostgreSQL      | 18.3             |
+| HeidiSQL        | Portable 12.8    |
 
 **Extensiones PHP necesarias:**
 - `pdo`
@@ -33,11 +35,13 @@ git clone https://github.com/lucciano12/Prueba-tecnica-sistemas-expertos.git
 psql -U postgres -c "CREATE DATABASE sistemas_expertos_db;"
 ```
 
-**3. Restaurar el schema**
+**3. Restaurar el dump (estructura + datos de prueba)**
 
 ```bash
-psql -U postgres -d sistemas_expertos_db -f DB/schema.sql
+psql -U postgres -d sistemas_expertos_db -f DB/dump.sql
 ```
+
+> También se incluye `DB/schema.sql` con solo la estructura si se prefiere partir desde cero.
 
 **4. Ajustar la conexión**
 
@@ -53,7 +57,7 @@ define('DB_PASS', '');  // agregar contraseña si corresponde
 
 **5. Levantar con Apache**
 
-Copiar la carpeta del proyecto dentro de `htdocs/` (XAMPP) o `www/` (Laragon) y acceder en:
+Copiar la carpeta del proyecto dentro de `www/` (Laragon) o `htdocs/` (XAMPP) y acceder en:
 
 ```
 http://localhost/Prueba-tecnica-sistemas-expertos/index.php
@@ -83,7 +87,8 @@ http://localhost/Prueba-tecnica-sistemas-expertos/index.php
 │       ├── tabla.css                # Estilos del listado y badges de estado
 │       └── form.css                 # Estilos de formularios create y edit
 └── DB/
-    └── schema.sql                   # Tablas + datos de prueba
+    ├── schema.sql                   # Solo estructura de tablas
+    └── dump.sql                     # Estructura + datos de prueba (recomendado para restaurar)
 ```
 
 ---
@@ -164,3 +169,4 @@ No se usaron frameworks ni librerías de terceros. Todo está construido con PHP
 - El estado por defecto al crear una bodega es `Activada`, según lo indicado en el requerimiento.
 - El campo `updated_at` se actualiza automáticamente con `CURRENT_TIMESTAMP` en cada edición.
 - Al editar una bodega, el `<select>` de encargados muestra todos los registros de la tabla `encargados` y marca el/los encargado(s) actual(es) de esa bodega. Al seleccionar uno y guardar, se actualiza el `bodega_id` de ese encargado.
+- Se recomienda restaurar usando `DB/dump.sql` (incluye datos de prueba). Si se prefiere partir desde cero, usar `DB/schema.sql`.
