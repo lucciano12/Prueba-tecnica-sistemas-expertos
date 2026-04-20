@@ -64,10 +64,15 @@
 
         <div class="form-group">
             <label for="estado">Estado <span class="required">*</span></label>
+            <?php
+                // Por defecto siempre Activada al crear (segun pauta).
+                // Si hubo error de validacion y el form se reposta, se respeta lo que eligio el usuario.
+                $estadoSeleccionado = $_POST['estado'] ?? 'Activada';
+            ?>
             <select id="estado" name="estado">
                 <option value="">-- Seleccionar --</option>
-                <option value="Activada"    <?= (($_POST['estado'] ?? '') === 'Activada')    ? 'selected' : '' ?>>Activada</option>
-                <option value="Desactivada" <?= (($_POST['estado'] ?? '') === 'Desactivada') ? 'selected' : '' ?>>Desactivada</option>
+                <option value="Activada"    <?= $estadoSeleccionado === 'Activada'    ? 'selected' : '' ?>>Activada</option>
+                <option value="Desactivada" <?= $estadoSeleccionado === 'Desactivada' ? 'selected' : '' ?>>Desactivada</option>
             </select>
             <span class="error-msg" id="err-estado">Debes seleccionar un estado</span>
         </div>
