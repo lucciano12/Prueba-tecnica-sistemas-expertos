@@ -88,7 +88,7 @@ class BodegaController
   // Mostrar formulario de edicion
   public function edit()
   {
-    $id     = $_GET['id'] ?? null;
+    $id     = (int) ($_GET['id'] ?? 0);
     $bodega = $this->model->getById($id);
 
     // Si no existe la bodega se redirige al listado
@@ -103,13 +103,19 @@ class BodegaController
   // Actualizar bodega existente
   public function update()
   {
-    // Se obtienen y limpian los valores del formulario
-    $id        = trim($_POST['id']        ?? '');
+    // El id viene en la URL (?action=update&id=X), NO en el POST
+    $id        = (int) ($_GET['id'] ?? 0);
     $codigo    = trim($_POST['codigo']    ?? '');
     $nombre    = trim($_POST['nombre']    ?? '');
     $ubicacion = trim($_POST['ubicacion'] ?? '');
     $dotacion  = trim($_POST['dotacion']  ?? '');
     $estado    = trim($_POST['estado']    ?? '');
+
+    // Validar que el id sea valido
+    if ($id <= 0) {
+      header('Location: index.php?action=index');
+      exit;
+    }
 
     // Validacion servidor: mismas reglas que en store()
     $errores = [];
@@ -166,7 +172,11 @@ class BodegaController
   // Eliminar bodega por id
   public function delete()
   {
-    $id = $_GET['id'] ?? null; // Se obtiene el id desde la URL
+    $id = (int) ($_GET['id'] ?? 0); // Se obtiene el id desde la URL y se castea a entero
+    if ($id <= 0) {
+      header('Location: index.php?action=index');
+      exit;
+    }
     $this->model->delete($id); // Se elimina la bodega, los encargados se borran por ON DELETE CASCADE
     header('Location: index.php?action=index');
     exit;
