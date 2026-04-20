@@ -95,23 +95,14 @@
             <span class="error-msg" id="err-ubicacion">La ubicación es obligatoria</span>
         </div>
 
-        <!-- Fila 3: Dotación y Encargado -->
-        <div class="form-row">
-            <div class="form-group">
-                <label for="dotacion">Dotación (N° personas)</label>
-                <input type="number" id="dotacion" name="dotacion"
-                       placeholder="Ej: 10"
-                       min="0" max="9999"
-                       value="<?= htmlspecialchars($_POST['dotacion'] ?? '') ?>">
-            </div>
-
-            <div class="form-group">
-                <label for="encargado">Encargado</label>
-                <input type="text" id="encargado" name="encargado"
-                       placeholder="Ej: Juan Pérez"
-                       maxlength="100"
-                       value="<?= htmlspecialchars($_POST['encargado'] ?? '') ?>">
-            </div>
+        <!-- Fila 3: Dotación (obligatoria, encargado eliminado) -->
+        <div class="form-group">
+            <label for="dotacion">Dotación (N° personas) <span class="required">*</span></label>
+            <input type="number" id="dotacion" name="dotacion"
+                   placeholder="Ej: 10"
+                   min="0" max="9999"
+                   value="<?= htmlspecialchars($_POST['dotacion'] ?? '') ?>">
+            <span class="error-msg" id="err-dotacion">La dotación es obligatoria</span>
         </div>
 
         <!-- Fila 4: Estado -->
@@ -144,6 +135,7 @@ document.getElementById('formCrear').addEventListener('submit', function(e) {
         { id: 'codigo',    err: 'err-codigo' },
         { id: 'nombre',    err: 'err-nombre' },
         { id: 'ubicacion', err: 'err-ubicacion' },
+        { id: 'dotacion',  err: 'err-dotacion' },
         { id: 'estado',    err: 'err-estado' }
     ];
 

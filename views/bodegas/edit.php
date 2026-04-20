@@ -63,14 +63,9 @@
 
     <h1>
         Editar Bodega
-        <!-- Muestra el ID de la bodega como referencia -->
         <span class="badge-id">#<?= htmlspecialchars($bodega['id']) ?></span>
     </h1>
 
-    <!--
-        El formulario envía por POST al método update().
-        Se pasa el id como campo oculto porque POST no lleva parámetros en la URL.
-    -->
     <form action="index.php?action=update" method="POST" id="formEditar" novalidate>
         <input type="hidden" name="id" value="<?= htmlspecialchars($bodega['id']) ?>">
 
@@ -102,21 +97,13 @@
             <span class="error-msg" id="err-ubicacion">La ubicación es obligatoria</span>
         </div>
 
-        <!-- Fila 3: Dotación y Encargado -->
-        <div class="form-row">
-            <div class="form-group">
-                <label for="dotacion">Dotación (N° personas)</label>
-                <input type="number" id="dotacion" name="dotacion"
-                       min="0" max="9999"
-                       value="<?= htmlspecialchars($bodega['dotacion'] ?? '') ?>">
-            </div>
-
-            <div class="form-group">
-                <label for="encargado">Encargado</label>
-                <input type="text" id="encargado" name="encargado"
-                       maxlength="100"
-                       value="<?= htmlspecialchars($bodega['encargado'] ?? '') ?>">
-            </div>
+        <!-- Fila 3: Dotación (obligatoria, encargado eliminado) -->
+        <div class="form-group">
+            <label for="dotacion">Dotación (N° personas) <span class="required">*</span></label>
+            <input type="number" id="dotacion" name="dotacion"
+                   min="0" max="9999"
+                   value="<?= htmlspecialchars($bodega['dotacion'] ?? '') ?>">
+            <span class="error-msg" id="err-dotacion">La dotación es obligatoria</span>
         </div>
 
         <!-- Fila 4: Estado -->
@@ -144,7 +131,6 @@
 
     </form>
 
-    <!-- Fecha de creación del registro como referencia -->
     <?php if (!empty($bodega['created_at'])): ?>
         <p class="info-created">
             Creado el <?= date('d/m/Y \a \l\a\s H:i', strtotime($bodega['created_at'])) ?>
@@ -154,7 +140,6 @@
 </div>
 
 <script>
-// Validación del formulario de edición (misma lógica que create)
 document.getElementById('formEditar').addEventListener('submit', function(e) {
     let valido = true;
 
@@ -162,6 +147,7 @@ document.getElementById('formEditar').addEventListener('submit', function(e) {
         { id: 'codigo',    err: 'err-codigo' },
         { id: 'nombre',    err: 'err-nombre' },
         { id: 'ubicacion', err: 'err-ubicacion' },
+        { id: 'dotacion',  err: 'err-dotacion' },
         { id: 'estado',    err: 'err-estado' }
     ];
 
@@ -185,7 +171,6 @@ document.getElementById('formEditar').addEventListener('submit', function(e) {
     }
 });
 
-// Limpiar error al escribir
 document.querySelectorAll('input, select').forEach(function(el) {
     el.addEventListener('input', function() {
         this.classList.remove('error');
