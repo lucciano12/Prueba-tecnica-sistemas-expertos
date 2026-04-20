@@ -1,7 +1,7 @@
 # Prueba Técnica — Mantenedor de Bodegas
 
 Módulo web desarrollado en PHP 7 con arquitectura MVC para administrar bodegas.
-Permite registrar, listar, editar y eliminar bodegas, con filtro por estado.
+Permite registrar, listar, editar y eliminar bodegas, con filtro por estado y reasignación de encargado.
 
 ---
 
@@ -68,16 +68,22 @@ http://localhost/Prueba-tecnica-sistemas-expertos/index.php
 ├── config/
 │   └── database.php                 # Conexión PDO a PostgreSQL
 ├── controllers/
-│   └── BodegaController.php         # Maneja las acciones: listar, crear, guardar, editar, actualizar, eliminar
+│   └── BodegaController.php         # Acciones: listar, crear, guardar, editar, actualizar, eliminar
 ├── models/
-│   └── Bodega.php                   # Consultas SQL encapsuladas
+│   ├── Bodega.php                   # Consultas SQL de bodegas
+│   └── Encargado.php                # Consultas SQL de encargados (listar, reasignar)
 ├── views/
 │   └── bodegas/
 │       ├── index.php                # Listado con filtro por estado
 │       ├── create.php               # Formulario nueva bodega
-│       └── edit.php                 # Formulario editar bodega
+│       └── edit.php                 # Formulario editar bodega (incluye select de encargado)
+├── assets/
+│   └── css/
+│       ├── base.css                 # Reset, variables, botones, contenedor
+│       ├── tabla.css                # Estilos del listado y badges de estado
+│       └── form.css                 # Estilos de formularios create y edit
 └── DB/
-    └── schema.sql                   # Tablas + datos de prueba (encargados)
+    └── schema.sql                   # Tablas + datos de prueba
 ```
 
 ---
@@ -86,10 +92,29 @@ http://localhost/Prueba-tecnica-sistemas-expertos/index.php
 
 El proyecto sigue el patrón **MVC (Modelo-Vista-Controlador)**:
 
-- **Model** (`models/Bodega.php`) — encapsula todas las consultas SQL a PostgreSQL
+- **Model** (`models/`) — encapsula todas las consultas SQL a PostgreSQL mediante PDO
 - **View** (`views/bodegas/`) — plantillas HTML/PHP que solo renderizan datos, sin lógica de negocio
-- **Controller** (`controllers/BodegaController.php`) — recibe la acción, llama al modelo y carga la vista correspondiente
+- **Controller** (`controllers/BodegaController.php`) — recibe la acción, llama al modelo y carga la vista
 - **Router** (`index.php`) — lee el parámetro `?action=` de la URL y delega al controlador
+
+---
+
+## Funcionalidades implementadas
+
+| # | Requerimiento | Estado |
+|---|---|---|
+| 1 | Agregar nueva bodega | ✅ |
+| 2 | Listar bodegas con filtro por estado | ✅ |
+| 3 | Editar bodega (nombre, dirección, dotación, encargado, estado) | ✅ |
+| 4 | Eliminar bodega con confirmación | ✅ |
+
+**Detalles adicionales:**
+- Estado por defecto `Activada` al crear una bodega
+- Validación doble: cliente (JavaScript) y servidor (PHP)
+- Filtro por estado en el listado (`Activada` / `Desactivada` / Todos)
+- Badge visual de estado en el listado
+- CSS separado por responsabilidad (`base.css`, `tabla.css`, `form.css`)
+- Reasignación de encargado desde el formulario de edición mediante `<select>` dinámico
 
 ---
 
@@ -104,7 +129,7 @@ El proyecto sigue el patrón **MVC (Modelo-Vista-Controlador)**:
 | `nombre`     | VARCHAR(100)  | Nombre de la bodega                       |
 | `ubicacion`  | VARCHAR(200)  | Dirección física                          |
 | `dotacion`   | INTEGER       | Cantidad de personas que trabajan         |
-| `estado`     | VARCHAR(20)   | `Activada` o `Desactivada`                |
+| `estado`     | VARCHAR(15)   | `Activada` o `Desactivada`                |
 | `created_at` | TIMESTAMP     | Fecha y hora de creación (automática)     |
 | `updated_at` | TIMESTAMP     | Fecha y hora de última modificación       |
 
@@ -113,16 +138,16 @@ El proyecto sigue el patrón **MVC (Modelo-Vista-Controlador)**:
 | Columna      | Tipo          | Descripción                               |
 |--------------|---------------|-------------------------------------------|
 | `id`         | SERIAL PK     | Identificador único                       |
-| `bodega_id`  | INTEGER FK    | Referencia a `bodegas.id`                 |
+| `bodega_id`  | INTEGER FK    | Referencia a `bodegas.id` (ON DELETE CASCADE) |
 | `run`        | VARCHAR(12)   | RUN del encargado                         |
 | `nombre`     | VARCHAR(100)  | Nombre                                    |
 | `apellido1`  | VARCHAR(100)  | Primer apellido                           |
-| `apellido2`  | VARCHAR(100)  | Segundo apellido                          |
-| `direccion`  | VARCHAR(200)  | Dirección del encargado                   |
+| `apellido2`  | VARCHAR(100)  | Segundo apellido (opcional)               |
+| `direccion`  | VARCHAR(200)  | Dirección personal del encargado          |
 | `telefono`   | VARCHAR(20)   | Teléfono de contacto                      |
 
 `encargados` tiene relación N:1 con `bodegas` — una bodega puede tener más de un encargado.
-Los encargados se gestionan directamente por base de datos; no tienen formulario en esta versión.
+Al eliminar una bodega, sus encargados se eliminan automáticamente (`ON DELETE CASCADE`).
 
 ---
 
@@ -132,8 +157,10 @@ No se usaron frameworks ni librerías de terceros. Todo está construido con PHP
 
 ---
 
-## Notas
+## Notas técnicas
 
-- El `index.php` actúa como front controller: recibe el parámetro `?action=` y delega al `BodegaController`.
-- La validación se aplica tanto en el cliente (JS) como en el servidor (PHP) antes de ejecutar cualquier operación en BD.
+- El `index.php` actúa como front controller: recibe `?action=` y delega al `BodegaController`.
+- La validación se aplica tanto en el cliente (JS) como en el servidor (PHP).
 - El estado por defecto al crear una bodega es `Activada`, según lo indicado en el requerimiento.
+- El campo `updated_at` se actualiza automáticamente con `CURRENT_TIMESTAMP` en cada edición.
+- Al editar una bodega, el `<select>` de encargados muestra todos los registros de la tabla `encargados` y marca el/los encargado(s) actual(es) de esa bodega. Al seleccionar uno y guardar, se actualiza el `bodega_id` de ese encargado.

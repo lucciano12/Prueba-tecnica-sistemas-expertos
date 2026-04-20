@@ -18,7 +18,7 @@
 
     <?php if (!empty($error)): ?>
         <div class="alert-error">
-            ⚠️ <?= $error ?>
+            &#9888;&#65039; <?= $error ?>
         </div>
     <?php endif; ?>
 
@@ -54,12 +54,27 @@
         </div>
 
         <div class="form-group">
-            <label for="dotacion">Dotacion (N° personas) <span class="required">*</span></label>
+            <label for="dotacion">Dotacion (N&deg; personas) <span class="required">*</span></label>
             <input type="number" id="dotacion" name="dotacion"
                    placeholder="Ej: 10"
                    min="0" max="9999"
                    value="<?= htmlspecialchars($bodega['dotacion']) ?>">
             <span class="error-msg" id="err-dotacion">La dotacion es obligatoria</span>
+        </div>
+
+        <div class="form-group">
+            <label for="encargado_id">Encargado</label>
+            <select id="encargado_id" name="encargado_id">
+                <option value="">-- Sin cambio de encargado --</option>
+                <?php foreach ($encargados as $enc): ?>
+                    <option value="<?= $enc['id'] ?>"
+                        <?= in_array($enc['id'], $idsActuales) ? 'selected' : '' ?>>
+                        <?= htmlspecialchars(trim($enc['nombre_completo'])) ?>
+                        <?= in_array($enc['id'], $idsActuales) ? '(actual)' : '' ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+            <small style="color:#888; font-size:12px;">Selecciona para reasignar el encargado principal de esta bodega.</small>
         </div>
 
         <div class="form-group">
