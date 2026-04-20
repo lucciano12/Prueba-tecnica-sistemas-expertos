@@ -4,57 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nueva Bodega</title>
-    <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: Arial, sans-serif; background: #f5f5f5; color: #333; }
-
-        .container { max-width: 680px; margin: 40px auto; background: #fff; padding: 32px; border-radius: 8px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
-
-        h1 { font-size: 1.4rem; margin-bottom: 8px; color: #333; }
-        .breadcrumb { font-size: 13px; color: #888; margin-bottom: 24px; }
-        .breadcrumb a { color: #4a90d9; text-decoration: none; }
-        .breadcrumb a:hover { text-decoration: underline; }
-
-        .alert-error { background: #fdecea; border: 1px solid #f5c6c2; color: #a94442; padding: 12px 16px; border-radius: 6px; margin-bottom: 20px; font-size: 14px; line-height: 1.6; }
-
-        .form-group { margin-bottom: 20px; }
-        label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; color: #444; }
-        label span.required { color: #e74c3c; margin-left: 3px; }
-
-        input[type="text"],
-        input[type="number"],
-        select {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 14px;
-            transition: border-color 0.2s, box-shadow 0.2s;
-            background: #fff;
-        }
-        input[type="text"]:focus,
-        input[type="number"]:focus,
-        select:focus {
-            outline: none;
-            border-color: #4a90d9;
-            box-shadow: 0 0 0 3px rgba(74,144,217,0.15);
-        }
-        input.error { border-color: #e74c3c; }
-        .error-msg { font-size: 12px; color: #e74c3c; margin-top: 4px; display: none; }
-        .error-msg.show { display: block; }
-
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-
-        .form-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 28px; padding-top: 20px; border-top: 1px solid #eee; }
-        .btn { padding: 10px 20px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; text-decoration: none; display: inline-block; }
-        .btn-primary { background: #4a90d9; color: #fff; }
-        .btn-primary:hover { background: #3a7bc8; }
-        .btn-secondary { background: #f0f0f0; color: #555; }
-        .btn-secondary:hover { background: #e0e0e0; }
-    </style>
+    <link rel="stylesheet" href="assets/css/base.css">
+    <link rel="stylesheet" href="assets/css/form.css">
 </head>
 <body>
-<div class="container">
+<div class="container-narrow">
 
     <p class="breadcrumb">
         <a href="index.php?action=index">Bodegas</a> &rsaquo; Nueva Bodega
@@ -129,7 +83,6 @@
 <script>
 document.getElementById('formCrear').addEventListener('submit', function(e) {
     let valido = true;
-
     const campos = [
         { id: 'codigo',    err: 'err-codigo' },
         { id: 'nombre',    err: 'err-nombre' },
@@ -137,11 +90,9 @@ document.getElementById('formCrear').addEventListener('submit', function(e) {
         { id: 'dotacion',  err: 'err-dotacion' },
         { id: 'estado',    err: 'err-estado' }
     ];
-
     campos.forEach(function(campo) {
         const input = document.getElementById(campo.id);
         const errSpan = document.getElementById(campo.err);
-
         if (!input.value.trim()) {
             input.classList.add('error');
             errSpan.classList.add('show');
@@ -151,7 +102,6 @@ document.getElementById('formCrear').addEventListener('submit', function(e) {
             errSpan.classList.remove('show');
         }
     });
-
     if (!valido) {
         e.preventDefault();
         document.querySelector('.error').focus();
@@ -161,8 +111,7 @@ document.getElementById('formCrear').addEventListener('submit', function(e) {
 document.querySelectorAll('input, select').forEach(function(el) {
     el.addEventListener('input', function() {
         this.classList.remove('error');
-        const errId = 'err-' + this.id;
-        const errSpan = document.getElementById(errId);
+        const errSpan = document.getElementById('err-' + this.id);
         if (errSpan) errSpan.classList.remove('show');
     });
 });

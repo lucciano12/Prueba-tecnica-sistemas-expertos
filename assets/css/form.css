@@ -1,0 +1,79 @@
+/* ===========================================
+   FORM.CSS — Estilos para create.php y edit.php
+   =========================================== */
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #444;
+}
+
+label span.required {
+    color: #e74c3c;
+    margin-left: 3px;
+}
+
+input[type="text"],
+input[type="number"],
+select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    background: #fff;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+select:focus {
+    outline: none;
+    border-color: #4a90d9;
+    box-shadow: 0 0 0 3px rgba(74,144,217,0.15);
+}
+
+input.error,
+select.error {
+    border-color: #e74c3c;
+}
+
+.error-msg {
+    font-size: 12px;
+    color: #e74c3c;
+    margin-top: 4px;
+    display: none;
+}
+
+.error-msg.show {
+    display: block;
+}
+
+/* Fila de 2 columnas */
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+/* Acciones del formulario */
+.form-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+/* Botones en formulario con tamanio mayor */
+.form-actions .btn {
+    padding: 10px 20px;
+    font-size: 14px;
+}
