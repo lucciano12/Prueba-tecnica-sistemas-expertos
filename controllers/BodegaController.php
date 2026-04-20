@@ -3,67 +3,172 @@ require_once __DIR__ . '/../models/Bodega.php';
 
 class BodegaController
 {
-  private $model; //Nos sirve para almacenar la instancia del modelo Bodega
+  private $model; // Almacena la instancia del modelo Bodega
 
   public function __construct()
-  { //Definimos el constructor
-    $this->model = new Bodega(); //Se crea una instancia del modelo Bodega y se asigna a la propiedad model
+  {
+    $this->model = new Bodega(); // Se crea una instancia del modelo Bodega
   }
 
-  //Listar todas las bodegas
+  // Listar todas las bodegas
   public function index()
   {
-    $filtro = $_GET['estado'] ?? 'todos'; //Obtenemos el valor del filtro de estado desde la URL, si no se proporciona se asigna 'todos' por defecto
-    $bodegas = $this->model->getAll($filtro); //Se llama al método getAll del modelo para obtener todas las bodegas de la base de datos y se almacena en la variable bodegas
+    $filtro  = $_GET['estado'] ?? 'todos'; // Se obtiene el filtro de estado desde la URL, por defecto 'todos'
+    $bodegas = $this->model->getAll($filtro); // Se obtienen las bodegas segun el filtro
     require_once __DIR__ . '/../views/bodegas/index.php';
   }
 
-  //Mostrar formulario de creacion de una nueva bodega
+  // Mostrar formulario de creacion
   public function create()
   {
     require_once __DIR__ . '/../views/bodegas/create.php';
   }
 
-  //Guardar una nueva bodega
+  // Guardar nueva bodega
   public function store()
   {
-    $codigo = $_POST['codigo'] ?? ''; //Obtenemos el valor del campo codigo del formulario
-    $nombre = $_POST['nombre'] ?? ''; //Obtenemos el valor del campo nombre del formulario
-    $ubicacion = $_POST['ubicacion'] ?? ''; //Obtenemos el valor del campo ubicacion del formulario
-    $dotacion = $_POST['dotacion'] ?? 0; //Obtenemos el valor del campo dotacion del formulario
-    $estado = $_POST['estado'] ?? 'Activada'; //Obtenemos el valor del campo estado del formulario
+    // Se obtienen y limpian los valores del formulario
+    $codigo    = trim($_POST['codigo']    ?? '');
+    $nombre    = trim($_POST['nombre']    ?? '');
+    $ubicacion = trim($_POST['ubicacion'] ?? '');
+    $dotacion  = trim($_POST['dotacion']  ?? '');
+    $estado    = trim($_POST['estado']    ?? '');
 
-    $this->model->create($codigo, $nombre, $ubicacion, $dotacion, $estado); //Se llama al método create del modelo para guardar la nueva bodega en la base de datos, pasando los valores obtenidos del formulario como parametros
-    header('Location: index.php?action=index'); //Redirigimos al usuario a la página principal después de guardar la nueva bodega
-    exit;
-  }
+    // Validacion servidor: se verifica cada campo antes de guardar en la BD
+    $errores = [];
 
-  //Mostrar formulario de edicion de una bodega existente
-  public function edit(){
-    $id = $_GET['id'] ?? null;
-    $bodega = $this->model->getById($id);
-    require_once __DIR__ . '/../views/bodegas/edit.php';
-  }
+    // Codigo: obligatorio y maximo 5 caracteres segun especificacion
+    if (empty($codigo)) {
+      $errores[] = 'El codigo es obligatorio';
+    } elseif (strlen($codigo) > 5) {
+      $errores[] = 'El codigo no puede superar los 5 caracteres';
+    }
 
-  //Actualizar bodega
-  public function update(){
-    $id = $_POST['id'] ?? null; //Obtenemos el valor del campo id 
-    $codigo = $_POST['codigo'] ?? ''; //Obtenemos el valor del campo codigo
-    $nombre = $_POST['nombre'] ?? ''; //Obtenemos el valor del campo nombre 
-    $ubicacion = $_POST['ubicacion'] ?? ''; //Obtenemos el valor del campo ubicacion 
-    $dotacion = $_POST['dotacion'] ?? 0; //Obtenemos el valor del campo dotacion 
-    $estado = $_POST['estado'] ?? 'Activada'; //Obtenemos el valor del campo estado
-    $this->model->update($id, $codigo, $nombre, $ubicacion, $dotacion, $estado);
+    // Nombre: obligatorio y maximo 100 caracteres
+    if (empty($nombre)) {
+      $errores[] = 'El nombre es obligatorio';
+    } elseif (strlen($nombre) > 100) {
+      $errores[] = 'El nombre no puede superar los 100 caracteres';
+    }
+
+    // Ubicacion: obligatoria y maximo 200 caracteres
+    if (empty($ubicacion)) {
+      $errores[] = 'La ubicacion es obligatoria';
+    } elseif (strlen($ubicacion) > 200) {
+      $errores[] = 'La ubicacion no puede superar los 200 caracteres';
+    }
+
+    // Dotacion: obligatoria, debe ser un numero entero mayor o igual a 0
+    if ($dotacion === '') {
+      $errores[] = 'La dotacion es obligatoria';
+    } elseif (!is_numeric($dotacion) || (int)$dotacion < 0) {
+      $errores[] = 'La dotacion debe ser un numero mayor o igual a 0';
+    }
+
+    // Estado: debe ser uno de los valores permitidos
+    if (empty($estado)) {
+      $errores[] = 'El estado es obligatorio';
+    } elseif (!in_array($estado, ['Activada', 'Desactivada'])) {
+      $errores[] = 'El estado ingresado no es valido';
+    }
+
+    // Si hay errores se vuelve al formulario mostrando los mensajes
+    if (!empty($errores)) {
+      $error = implode('<br>', $errores);
+      require_once __DIR__ . '/../views/bodegas/create.php';
+      return;
+    }
+
+    // Sin errores: se guarda la bodega en la BD
+    $this->model->create($codigo, $nombre, $ubicacion, (int)$dotacion, $estado);
     header('Location: index.php?action=index');
     exit;
   }
 
-  //Eliminar bodega
-  public function delete(){
-    $id = $_GET['id'] ?? null; //Obtenemos el valor del campo id desde la URL
-    $this->model->delete($id); //Se llama al metodo delete del modelo para eliminar la bodega de la base de datos, pasando el id como parametro
-    header('Location: index.php?action=index'); //Redirigimos al usuario a la pagina principal despues de eliminar la bodega
+  // Mostrar formulario de edicion
+  public function edit()
+  {
+    $id     = $_GET['id'] ?? null;
+    $bodega = $this->model->getById($id);
+
+    // Si no existe la bodega se redirige al listado
+    if (!$bodega) {
+      header('Location: index.php?action=index');
+      exit;
+    }
+
+    require_once __DIR__ . '/../views/bodegas/edit.php';
+  }
+
+  // Actualizar bodega existente
+  public function update()
+  {
+    // Se obtienen y limpian los valores del formulario
+    $id        = trim($_POST['id']        ?? '');
+    $codigo    = trim($_POST['codigo']    ?? '');
+    $nombre    = trim($_POST['nombre']    ?? '');
+    $ubicacion = trim($_POST['ubicacion'] ?? '');
+    $dotacion  = trim($_POST['dotacion']  ?? '');
+    $estado    = trim($_POST['estado']    ?? '');
+
+    // Validacion servidor: mismas reglas que en store()
+    $errores = [];
+
+    // Codigo: obligatorio y maximo 5 caracteres segun especificacion
+    if (empty($codigo)) {
+      $errores[] = 'El codigo es obligatorio';
+    } elseif (strlen($codigo) > 5) {
+      $errores[] = 'El codigo no puede superar los 5 caracteres';
+    }
+
+    // Nombre: obligatorio y maximo 100 caracteres
+    if (empty($nombre)) {
+      $errores[] = 'El nombre es obligatorio';
+    } elseif (strlen($nombre) > 100) {
+      $errores[] = 'El nombre no puede superar los 100 caracteres';
+    }
+
+    // Ubicacion: obligatoria y maximo 200 caracteres
+    if (empty($ubicacion)) {
+      $errores[] = 'La ubicacion es obligatoria';
+    } elseif (strlen($ubicacion) > 200) {
+      $errores[] = 'La ubicacion no puede superar los 200 caracteres';
+    }
+
+    // Dotacion: obligatoria, debe ser un numero entero mayor o igual a 0
+    if ($dotacion === '') {
+      $errores[] = 'La dotacion es obligatoria';
+    } elseif (!is_numeric($dotacion) || (int)$dotacion < 0) {
+      $errores[] = 'La dotacion debe ser un numero mayor o igual a 0';
+    }
+
+    // Estado: debe ser uno de los valores permitidos
+    if (empty($estado)) {
+      $errores[] = 'El estado es obligatorio';
+    } elseif (!in_array($estado, ['Activada', 'Desactivada'])) {
+      $errores[] = 'El estado ingresado no es valido';
+    }
+
+    // Si hay errores se obtiene la bodega y se vuelve al formulario de edicion
+    if (!empty($errores)) {
+      $error  = implode('<br>', $errores);
+      $bodega = $this->model->getById($id);
+      require_once __DIR__ . '/../views/bodegas/edit.php';
+      return;
+    }
+
+    // Sin errores: se actualiza la bodega en la BD
+    $this->model->update($id, $codigo, $nombre, $ubicacion, (int)$dotacion, $estado);
+    header('Location: index.php?action=index');
     exit;
   }
 
+  // Eliminar bodega por id
+  public function delete()
+  {
+    $id = $_GET['id'] ?? null; // Se obtiene el id desde la URL
+    $this->model->delete($id); // Se elimina la bodega, los encargados se borran por ON DELETE CASCADE
+    header('Location: index.php?action=index');
+    exit;
+  }
 }
